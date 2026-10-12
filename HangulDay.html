@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>한글날 특집: 귀여운 순우리말 겨루기</title>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Gothic+A1:wght@500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --hanji-bg: #FAF4EB;
+            --card-bg: #FFFDF9;
+            --primary-red: #FF6B6B;
+            --point-green: #51CF66;
+            --point-yellow: #FCC419;
+            --text-dark: #495057;
+            --border-soft: #E9ECEF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Jua', 'Gothic A1', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--hanji-bg);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            background-image: radial-gradient(#E9ECEF 15%, transparent 16%);
+            background-size: 20px 20px;
+        }
+
+        .main-card {
+            width: 100%;
+            max-width: 480px;
+            background-color: var(--card-bg);
+            border: 4px solid var(--text-dark);
+            border-radius: 24px;
+            padding: 32px 24px;
+            box-shadow: 0 12px 0px var(--text-dark);
+            text-align: center;
+            position: relative;
+        }
+
+        /* 귀여운 스티커/배지 장식 */
+        .cute-badge {
+            display: inline-block;
+            background-color: var(--point-yellow);
+            color: var(--text-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 15px;
+            border: 2px solid var(--text-dark);
+            margin-bottom: 12px;
+            box-shadow: 2px 2px 0px var(--text-dark);
+        }
+
+        .title {
+            font-size: 30px;
+            color: var(--text-dark);
+            margin-bottom: 8px;
+            word-break: keep-all;
+        }
+
+        .subtitle {
+            font-family: 'Gothic A1', sans-serif;
+            font-size: 14px;
+            color: #868E96;
+            font-weight: 700;
+            margin-bottom: 24px;
+        }
+
+        /* 세트 선택 스타일 */
+        .version-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .version-btn {
+            background-color: #FFF;
+            border: 3px solid var(--text-dark);
+            border-radius: 16px;
+            padding: 16px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            box-shadow: 0 4px 0px var(--text-dark);
+            text-align: left;
+        }
+
+        .version-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0px var(--text-dark);
+            background-color: #FFF9DB;
+        }
+
+        .version-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0px var(--text-dark);
+        }
+
+        .v-title {
+            font-size: 20px;
+            color: var(--text-dark);
+        }
+
+        .v-desc {
+            font-family: 'Gothic A1', sans-serif;
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        /* 퀴즈 진행 화면 */
+        .quiz-screen {
+            display: none;
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 18px;
+            margin-bottom: 16px;
+            background: #F1F3F5;
+            padding: 10px 18px;
+            border-radius: 14px;
+            border: 2px solid var(--text-dark);
+        }
+
+        .life-badge {
+            color: var(--primary-red);
+        }
+
+        .question-box {
+            background-color: #E7F5FF;
+            border: 3px solid var(--text-dark);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 3px 3px 0px var(--text-dark);
+        }
+
+        .q-label {
+            font-size: 14px;
+            color: #1C7ED6;
+            margin-bottom: 6px;
+            display: block;
+        }
+
+        .q-text {
+            font-size: 19px;
+            color: var(--text-dark);
+            line-height: 1.5;
+            word-break: keep-all;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .opt-btn {
+            background-color: #FFF;
+            border: 3px solid var(--text-dark);
+            border-radius: 14px;
+            padding: 16px;
+            font-size: 20px;
+            color: var(--text-dark);
+            cursor: pointer;
+            box-shadow: 0 4px 0px var(--text-dark);
+            transition: all 0.1s ease;
+        }
+
+        .opt-btn:hover {
+            background-color: #F8F9FA;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 0px var(--text-dark);
+        }
+
+        .opt-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0px var(--text-dark);
+        }
+
+        /* 게임 오버 / 승리 화면 */
+        .end-screen {
+            display: none;
+        }
+
+        .end-emoji {
+            font-size: 64px;
+            margin-bottom: 12px;
+            animation: pop 0.4s ease;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.5); }
+            80% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .end-msg {
+            font-size: 26px;
+            color: var(--primary-red);
+            margin-bottom: 12px;
+        }
+
+        .end-score-box {
+            background: #FFF9DB;
+            border: 3px solid var(--text-dark);
+            border-radius: 16px;
+            padding: 16px;
+            font-size: 22px;
+            margin-bottom: 20px;
+            box-shadow: 3px 3px 0px var(--text-dark);
+        }
+
+        .desc-box {
+            font-family: 'Gothic A1', sans-serif;
+            font-size: 14px;
+            color: #495057;
+            background: #F8F9FA;
+            border: 2px dashed #CED4DA;
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .restart-btn {
+            width: 100%;
+            background-color: var(--point-green);
+            color: #FFF;
+            border: 3px solid var(--text-dark);
+            border-radius: 16px;
+            padding: 16px;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: 0 5px 0px var(--text-dark);
+            transition: all 0.1s ease;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 0px var(--text-dark);
+        }
+
+        .restart-btn:active {
+            transform: translateY(2px);
+            box-shadow: 0 2px 0px var(--text-dark);
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    
+    <!-- 1. 메인 / 세트 선택 화면 -->
+    <div id="startScreen">
+        <div class="cute-badge">한글날 특집 🌸</div>
+        <h1 class="title">순우리말 단어 찾기</h1>
+        <p class="subtitle">⚠️ 틀리면 바로 게임 오버! 도전해보세요!</p>
+
+        <div class="version-list">
+            <div class="version-btn" onclick="startGame(1)">
+                <div class="v-title">🐣 훈민 세트 (1탄)</div>
+                <div class="v-desc">윤슬, 시나브로, 아람 등 정갈한 순우리말</div>
+            </div>
+            <div class="version-btn" onclick="startGame(2)">
+                <div class="v-title">🐥 정음 세트 (2탄)</div>
+                <div class="v-desc">온새미로, 미리내, 마중물 등 신비로운 순우리말</div>
+            </div>
+            <div class="version-btn" onclick="startGame(3)">
+                <div class="v-title">🦅 집현 세트 (3탄)</div>
+                <div class="v-desc">도담도담, 하람, 늘봄 등 다채로운 순우리말</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. 퀴즈 진입 화면 -->
+    <div class="quiz-screen" id="quizScreen">
+        <div class="status-header">
+            <span>단계: <b id="stageText" style="color:#1C7ED6;">1</b> / 7</span>
+            <span class="life-badge">❤️ 서바이벌</span>
+            <span>점수: <b id="scoreText" style="color:var(--primary-red);">0</b>점</span>
+        </div>
+
+        <div class="question-box">
+            <span class="q-label">💡 단어의 뜻</span>
+            <div class="q-text" id="questionText">단어 뜻이 여기에 나옵니다.</div>
+        </div>
+
+        <div class="options-list" id="optionsContainer"></div>
+    </div>
+
+    <!-- 3. 게임 오버 / 성공 결과 화면 -->
+    <div class="end-screen" id="endScreen">
+        <div class="end-emoji" id="endEmoji">😢</div>
+        <div class="end-msg" id="endTitle">앗, 아쉽습니다!</div>
+
+        <div class="end-score-box">
+            최종 점수: <span id="finalScore" style="color:var(--primary-red); font-weight: bold;">0</span>점
+        </div>
+
+        <div class="desc-box" id="endDesc">
+            정답에 대한 풀이가 여기에 표시됩니다.
+        </div>
+
+        <button class="restart-btn" onclick="resetGame()">다시 도전하기 🔄</button>
+    </div>
+
+</div>
+
+<script>
+    const problemSets = {
+        1: [
+            {
+                meaning: "햇빛이나 달빛에 비치어 반짝이는 잔물결을 뜻하는 말은?",
+                options: [
+                    { word: "윤슬", isCorrect: true, desc: "'윤슬'은 햇빛이나 달빛에 비치어 반짝이는 잔물결을 뜻하는 순우리말입니다." },
+                    { word: "잔물", isCorrect: false, desc: "'잔물'은 작게 이는 물결을 뜻합니다." },
+                    { word: "은물", isCorrect: false, desc: "'은물'은 시적 표현으로 쓰이나 정식 고유어는 '윤슬'입니다." }
+                ]
+            },
+            {
+                meaning: "'모르는 사이에 조금씩 조금씩' 진행되는 모양을 뜻하는 말은?",
+                options: [
+                    { word: "시나브로", isCorrect: true, desc: "'시나브로'는 자신도 모르는 사이에 조금씩 일어나는 모양을 뜻하는 순우리말입니다." },
+                    { word: "점차", isCorrect: false, desc: "'점차'는 순서대로 조금씩 진행된다는 한자어입니다." },
+                    { word: "서서히", isCorrect: false, desc: "'서서히'는 한자 '서(徐)'에서 나온 단어입니다." }
+                ]
+            },
+            {
+                meaning: "밤이나 도토리 따위가 잘 익어 저절로 벌어진 상태를 뜻하는 말은?",
+                options: [
+                    { word: "아람", isCorrect: true, desc: "'아람'은 밤이나 도토리가 잘 익어 저절로 벌어진 상태를 뜻하는 순우리말입니다." },
+                    { word: "알밤", isCorrect: false, desc: "'알밤'은 겉껍질을 깐 밤알을 뜻합니다." },
+                    { word: "숙과", isCorrect: false, desc: "'숙과'는 익은 과일을 의미하는 한자어입니다." }
+                ]
+            },
+            {
+                meaning: "남과 잘 사귀는 싹싹스러운 성품이나 우애를 뜻하는 말은?",
+                options: [
+                    { word: "너울가지", isCorrect: true, desc: "'너울가지'는 남과 잘 어울리는 싹싹한 성품을 뜻하는 순우리말입니다." },
+                    { word: "친화력", isCorrect: false, desc: "'친화력'은 한자 결합어입니다." },
+                    { word: "붙임성", isCorrect: false, desc: "'붙임성'은 한자 '성(性)'이 합성된 표현입니다." }
+                ]
+            },
+            {
+                meaning: "잠에서 깨었다가 다시 이어 드는 잠을 뜻하는 말은?",
+                options: [
+                    { word: "그루잠", isCorrect: true, desc: "'그루잠'은 깨었다가 다시 드는 잠을 뜻하는 아름다운 순우리말입니다." },
+                    { word: "재잠", isCorrect: false, desc: "'재잠'은 올바른 순우리말 표기가 아닙니다." },
+                    { word: "보조잠", isCorrect: false, desc: "'보조잠'은 한자어가 포함된 표현입니다." }
+                ]
+            },
+            {
+                meaning: "앞날의 행복을 비는 덕담이나 풍물놀이의 축원 의식을 뜻하는 말은?",
+                options: [
+                    { word: "비나리", isCorrect: true, desc: "'비나리'는 앞날의 행복을 비는 말과 행위를 뜻하는 순우리말입니다." },
+                    { word: "덕담", isCorrect: false, desc: "'덕담'은 덕을 빌어주는 말이라는 한자어입니다." },
+                    { word: "축원", isCorrect: false, desc: "'축원'은 복을 바란다는 한자어입니다." }
+                ]
+            },
+            {
+                meaning: "'생각'을 뜻하는 옛 순우리말 단어는?",
+                options: [
+                    { word: "혜윰", isCorrect: true, desc: "'혜윰'은 '생각'을 뜻하는 옛 순우리말입니다." },
+                    { word: "사유", isCorrect: false, desc: "'사유'는 생각을 깊이 한다는 한자어입니다." },
+                    { word: "염원", isCorrect: false, desc: "'염원'은 간절히 바란다는 한자어입니다." }
+                ]
+            }
+        ],
+        2: [
+            {
+                meaning: "가르거나 쪼개지 않고 생김새 그대로 온전한 상태를 뜻하는 말은?",
+                options: [
+                    { word: "온새미로", isCorrect: true, desc: "'온새미로'는 쪼개지 않고 있는 그대로라는 뜻의 순우리말입니다." },
+                    { word: "통째로", isCorrect: false, desc: "'통째로'는 덩어리 전체라는 뜻의 일반 표현입니다." },
+                    { word: "온전", isCorrect: false, desc: "'온전'은 한자 '전(全)'이 포함된 단어입니다." }
+                ]
+            },
+            {
+                meaning: "펌프에서 물이 잘 나오지 않을 때 먼저 붓는 물을 뜻하는 말은?",
+                options: [
+                    { word: "마중물", isCorrect: true, desc: "'마중물'은 손님을 마중하듯 먼저 붓는 물을 뜻하는 순우리말입니다." },
+                    { word: "유도수", isCorrect: false, desc: "'유도수'는 한자어 조합입니다." },
+                    { word: "시작물", isCorrect: false, desc: "'시작물'은 표준어가 아닙니다." }
+                ]
+            },
+            {
+                meaning: "'은하수'를 이르는 아름다운 순우리말 표현은?",
+                options: [
+                    { word: "미리내", isCorrect: true, desc: "'미리내'는 은하수를 뜻하는 순우리말입니다." },
+                    { word: "은천", isCorrect: false, desc: "'은천'은 한자어 표현입니다." },
+                    { word: "성하", isCorrect: false, desc: "'성하'는 한자어 표현입니다." }
+                ]
+            },
+            {
+                meaning: "마음에 거슬림 없이 수월하고 부드러운 모양을 뜻하는 말은?",
+                options: [
+                    { word: "시나브로", isCorrect: false, desc: "'시나브로'는 조금씩 조금씩을 뜻합니다." },
+                    { word: "너울가지", isCorrect: true, desc: "'너울가지'는 싹싹하고 부드러운 성품을 뜻합니다." },
+                    { word: "유연", isCorrect: false, desc: "'유연'은 한자어 표현입니다." }
+                ]
+            },
+            {
+                meaning: "오랜 친구 사이의 정겨운 우정과 친밀함을 뜻하는 순우리말은?",
+                options: [
+                    { word: "볼비비기", isCorrect: true, desc: "'볼비비기'는 친밀하게 볼을 비비는 것처럼 가까운 사이를 뜻합니다." },
+                    { word: "우정", isCorrect: false, desc: "'우정'은 한자어 단어입니다." },
+                    { word: "친교", isCorrect: false, desc: "'친교' 또한 한자어 표현입니다." }
+                ]
+            },
+            {
+                meaning: "비가 오기 전에 바람이 불고 구름이 끼는 등 미리 나타나는 기운은?",
+                options: [
+                    { word: "비깝", isCorrect: true, desc: "'비깝'은 비가 오려고 하는 기운을 뜻하는 순우리말입니다." },
+                    { word: "징후", isCorrect: false, desc: "'징후'는 한자어 단어입니다." },
+                    { word: "비맞이", isCorrect: false, desc: "'비맞이'는 비를 맞이하는 일을 뜻합니다." }
+                ]
+            },
+            {
+                meaning: "'용(龍)'을 뜻하는 옛 순우리말 단어는?",
+                options: [
+                    { word: "미르", isCorrect: true, desc: "'미르'는 '용'을 뜻하던 아름다운 옛 순우리말입니다." },
+                    { word: "가람", isCorrect: false, desc: "'가람'은 '강'을 뜻하는 옛 순우리말입니다." },
+                    { word: "나르", isCorrect: false, desc: "'나르'는 표준 순우리말이 아닙니다." }
+                ]
+            }
+        ],
+        3: [
+            {
+                meaning: "하늘이 내린 소중한 사람이라는 뜻의 순우리말은?",
+                options: [
+                    { word: "하람", isCorrect: true, desc: "'하람'은 하늘이 내린 소중한 사람이라는 뜻의 순우리말입니다." },
+                    { word: "천사", isCorrect: false, desc: "'천사'는 한자어 표현입니다." },
+                    { word: "보람", isCorrect: false, desc: "'보람'은 보람찬 결과를 뜻하는 말입니다." }
+                ]
+            },
+            {
+                meaning: "어린아이가 탈 없이 잘 자라는 모양을 뜻하는 순우리말은?",
+                options: [
+                    { word: "도담도담", isCorrect: true, desc: "'도담도담'은 어린아이가 탈 없이 잘 자라는 모양을 뜻합니다." },
+                    { word: "쑥쑥", isCorrect: false, desc: "'쑥쑥'은 키가 자라는 모양의 부사입니다." },
+                    { word: "무럭무럭", isCorrect: false, desc: "'무럭무럭'은 일반 부사입니다." }
+                ]
+            },
+            {
+                meaning: "언제나 봄처럼 생기 있고 따뜻하게 살라는 뜻의 순우리말은?",
+                options: [
+                    { word: "늘봄", isCorrect: true, desc: "'늘봄'은 언제나 봄날처럼 따스하다는 뜻의 순우리말입니다." },
+                    { word: "상춘", isCorrect: false, desc: "'상춘'은 봄을 즐긴다는 한자어입니다." },
+                    { word: "영봄", isCorrect: false, desc: "'영봄'은 표준어가 아닙니다." }
+                ]
+            },
+            {
+                meaning: "'강'을 뜻하는 옛 순우리말 단어는?",
+                options: [
+                    { word: "가람", isCorrect: true, desc: "'가람'은 '강'을 뜻하던 옛 순우리말입니다." },
+                    { word: "바다", isCorrect: false, desc: "'바다'는 넓은 바다를 뜻하는 순우리말입니다." },
+                    { word: "해람", isCorrect: false, desc: "'해람'은 한자어 표현입니다." }
+                ]
+            },
+            {
+                meaning: "갓 피어난 꽃처럼 파릇파릇하고 싱싱함을 뜻하는 순우리말은?",
+                options: [
+                    { word: "꽃아람", isCorrect: true, desc: "'꽃아람'은 꽃처럼 탐스럽게 익은 상태를 뜻하는 말입니다." },
+                    { word: "생기", isCorrect: false, desc: "'생기'는 한자어 표현입니다." },
+                    { word: "꽃가람", isCorrect: false, desc: "'꽃가람'은 꽃과 강을 뜻하는 합성어입니다." }
+                ]
+            },
+            {
+                meaning: "가장 으뜸이 되는 큰 울타리나 사람을 뜻하는 순우리말은?",
+                options: [
+                    { word: "한울", isCorrect: true, desc: "'한울'은 큰 울타리, 또는 으뜸을 뜻하는 순우리말입니다." },
+                    { word: "제일", isCorrect: false, desc: "'제일'은 한자어 표현입니다." },
+                    { word: "최고", isCorrect: false, desc: "'최고' 또한 한자어 표현입니다." }
+                ]
+            },
+            {
+                meaning: "비가 내린 뒤 맑게 씻긴 상태를 뜻하는 아름다운 순우리말은?",
+                options: [
+                    { word: "비씻김", isCorrect: true, desc: "'비씻김'은 비로 깨끗이 씻겨 내려간 상태를 뜻합니다." },
+                    { word: "청명", isCorrect: false, desc: "'청명'은 맑다는 한자어입니다." },
+                    { word: "해오름", isCorrect: false, desc: "'해오름'은 해가 뜨는 모양을 뜻합니다." }
+                ]
+            }
+        ]
+    };
+
+    let selectedSet = 1;
+    let currentIndex = 0;
+    let currentScore = 0;
+
+    function startGame(setNum) {
+        selectedSet = setNum;
+        currentIndex = 0;
+        currentScore = 0;
+
+        document.getElementById("startScreen").style.display = "none";
+        document.getElementById("quizScreen").style.display = "block";
+        document.getElementById("endScreen").style.display = "none";
+
+        showQuestion();
+    }
+
+    function showQuestion() {
+        const qData = problemSets[selectedSet][currentIndex];
+
+        document.getElementById("stageText").innerText = currentIndex + 1;
+        document.getElementById("scoreText").innerText = currentScore;
+        document.getElementById("questionText").innerText = qData.meaning;
+
+        const container = document.getElementById("optionsContainer");
+        container.innerHTML = "";
+
+        // 보기 무작위 섞기
+        const shuffled = [...qData.options].sort(() => Math.random() - 0.5);
+
+        shuffled.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "opt-btn";
+            btn.innerText = opt.word;
+            btn.onclick = () => checkAnswer(opt);
+            container.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(selectedOpt) {
+        if (selectedOpt.isCorrect) {
+            // 정답인 경우 점수 10점 추가 후 다음 문제 진행
+            currentScore += 10;
+            currentIndex++;
+
+            if (currentIndex < problemSets[selectedSet].length) {
+                showQuestion();
+            } else {
+                // 7단계 모두 통과 시 성공 화면!
+                endGame(true, "🎉 축하합니다! 모든 단계를 통과하셨어요!");
+            }
+        } else {
+            // 틀린 경우 바로 서바이벌 종료!
+            endGame(false, selectedOpt.desc);
+        }
+    }
+
+    function endGame(isWin, descText) {
+        document.getElementById("quizScreen").style.display = "none";
+        document.getElementById("endScreen").style.display = "block";
+
+        document.getElementById("finalScore").innerText = currentScore;
+        document.getElementById("endDesc").innerText = descText;
+
+        if (isWin) {
+            document.getElementById("endEmoji").innerText = "👑";
+            document.getElementById("endTitle").innerText = "완벽 통과!";
+            document.getElementById("endTitle").style.color = "var(--point-green)";
+        } else {
+            document.getElementById("endEmoji").innerText = "😢";
+            document.getElementById("endTitle").innerText = "앗, 아쉽습니다!";
+            document.getElementById("endTitle").style.color = "var(--primary-red)";
+        }
+    }
+
+    function resetGame() {
+        document.getElementById("endScreen").style.display = "none";
+        document.getElementById("startScreen").style.display = "block";
+    }
+</script>
+</body>
+</html>
