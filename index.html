@@ -503,11 +503,13 @@
     let selectedSet = 1;
     let currentIndex = 0;
     let currentScore = 0;
+    let correctCount = 0;
 
     function startGame(setNum) {
         selectedSet = setNum;
         currentIndex = 0;
         currentScore = 0;
+        correctCount = 0;
 
         document.getElementById("startScreen").style.display = "none";
         document.getElementById("quizScreen").style.display = "block";
@@ -553,6 +555,7 @@
 
         if (selectedOpt.isCorrect) {
             currentScore += 10;
+            correctCount++;
             feedback.innerText = "⭕ 정답입니다! " + selectedOpt.desc;
             feedback.style.borderColor = "var(--point-green)";
         } else {
@@ -575,25 +578,29 @@
         if (currentIndex < problemSets[selectedSet].length) {
             showQuestion();
         } else {
-            endGame(true, "모든 문제를 풀었어요! 정답을 맞힌 문제마다 10점씩 획득했습니다.");
+            endGame();
         }
     }
 
-    function endGame(isWin, descText) {
+    function endGame() {
         document.getElementById("quizScreen").style.display = "none";
         document.getElementById("endScreen").style.display = "block";
 
-        document.getElementById("finalScore").innerText = currentScore;
-        document.getElementById("endDesc").innerText = descText;
+        const totalQuestions = problemSets[selectedSet].length;
+        const allCorrect = correctCount === totalQuestions;
 
-        if (isWin) {
-            document.getElementById("endEmoji").innerText = "🏁";
-            document.getElementById("endTitle").innerText = "퀴즈 완료!";
+        document.getElementById("finalScore").innerText = currentScore;
+
+        if (allCorrect) {
+            document.getElementById("endEmoji").innerText = "🎉";
+            document.getElementById("endTitle").innerText = "모두 성공! 축하합니다!";
             document.getElementById("endTitle").style.color = "var(--point-green)";
+            document.getElementById("endDesc").innerText = `축하합니다! ${totalQuestions}문제를 모두 맞혔어요! 완벽한 성공이에요!`;
         } else {
-            document.getElementById("endEmoji").innerText = "😢";
-            document.getElementById("endTitle").innerText = "앗, 아쉽습니다!";
+            document.getElementById("endEmoji").innerText = "👏";
+            document.getElementById("endTitle").innerText = "퀴즈 완료! 수고했어요!";
             document.getElementById("endTitle").style.color = "var(--primary-red)";
+            document.getElementById("endDesc").innerText = `총 ${totalQuestions}개 중 ${correctCount}개를 맞혔어요!`;
         }
     }
 
